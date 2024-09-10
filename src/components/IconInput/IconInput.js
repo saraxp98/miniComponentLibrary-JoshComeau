@@ -8,84 +8,93 @@ import VisuallyHidden from "../VisuallyHidden";
 const INPUT_SIZES = {
     small: {
         fontSize: 14,
+        borderThickness: 1,
+        inputHeight: 24,
         lineHeight: 16.41,
-        iconSize: 16,
-        borderBottomWidth: 1,
         paddingLeft: 24,
     },
     large: {
         fontSize: 18,
+        borderThickness: 2,
+        inputHeight: 36,
         lineHeight: 21.09,
-        iconSize: 24,
-        borderBottomWidth: 2,
-        paddingLeft: 36
+        paddingLeft: 36,
     }
 };
 
 const IconInput = ({label, icon, width = 250, size, placeholder,}) => {
-    const style = INPUT_SIZES[size];
+    const styles = INPUT_SIZES[size];
 
-    if (!style) {
+    const iconSize = size === 'small' ? 16 : 24;
+
+    if (!styles) {
         throw new Error(`Unknown INPUT size: ${size}!`);
     }
 
-    return <Wrapper>
-        <IconWrapper style={{'--size': style.size + 'px'}}>
-            <MyIcon id={icon} size={style.iconSize}/>
-            {/*<Icon id={icon} size={style.iconSize} style={{position: 'absolute', top: 0, bottom: 0, left: 0}}/>*/}
+    return <Wrapper style={{'--height': styles.inputHeight + 'px'}}>
+        <VisuallyHidden>{label}</VisuallyHidden>
+
+        <IconWrapper style={{'--size': iconSize + 'px'}}>
+            <MyIcon id={icon} size={iconSize}/>
+            {/*<Icon id={icon} size={styles.iconSize} styles={{position: 'absolute', top: 0, bottom: 0, left: 0}}/>*/}
         </IconWrapper>
         <Input placeholder={placeholder} style={{
-            '--borderBottomWidth': style.borderBottomWidth + 'px',
-            '--fontSize': style.fontSize + 'px',
-            '--paddingLeft': style.paddingLeft + 'px',
-            '--lineHeight': style.lineHeight + 'px',
+            '--borderThickness': styles.borderThickness + 'px',
+            '--fontSize': (styles.fontSize / 16) + 'rem',
+            '--paddingLeft': styles.paddingLeft + 'px',
+            '--lineHeight': styles.lineHeight + 'px',
             '--inputWidth': width + 'px',
+            '--inputHeight': (styles.inputHeight / 16) + 'rem',
         }}/>
-        <VisuallyHidden>{label}</VisuallyHidden>
     </Wrapper>
 };
 
-const Wrapper = styled.div`
-    position: relative
-`
-
-const IconWrapper = styled.div`
-    width: var(--size);
-    height: var(--size);
-`
-const MyIcon = styled(Icon)`
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    color: ${COLORS.gray700};
-    /* BORDER ??? */
-`
-
-const Input = styled.input`
-    font-size: var(--fontSize);
-    line-height: var(--lineHeight);
-    font-weight: 700;
+const Wrapper = styled.label` /* Se utilizzo una LABEL al posto di un DIV, qualsiasi elemento cliccato al suo interno, imposterà il cursore nell'input */
+    display: block;
+    position: relative;
     color: ${COLORS.gray700};
 
-    padding-left: var(--paddingLeft);
-    border: none;
-    border-bottom: var(--borderBottomWidth) solid ${COLORS.black};
-    width: var(--inputWidth);
-
-    &::placeholder {
-        color: ${COLORS.gray500};
-        font-weight: 400;
-    }
+    max-width: fit-content;
 
     &:focus {
+        outline-style: auto;
         outline-offset: 4px;
     }
 
     &:hover {
-        outline-style: auto;
-        outline-offset: 4px;
-        outline-color: ${COLORS.transparentGray15};
+        color: ${COLORS.black};
+    }
+`
+
+const IconWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto 0;
+    height: var(--size);
+
+    width: var(--size);
+`
+const MyIcon = styled(Icon)`
+    /* BORDER ??? */
+`
+
+const Input = styled.input`
+    width: var(--inputWidth);
+    height: var(--inputHeight);
+    font-size: var(--fontSize);
+    border: none;
+    border-bottom: var(--borderThickness) solid ${COLORS.black};
+    padding-left: var(--paddingLeft);
+    color: inherit; /* Il colore non viene automaticamente ereditato come succede per l'icona, quindi devo specificare color:inherit */
+    font-weight: 700;
+
+    line-height: var(--lineHeight);
+
+    &::placeholder {
+        color: ${COLORS.gray500};
+        font-weight: 400;
     }
 `
 
